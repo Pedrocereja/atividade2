@@ -2,12 +2,12 @@
 
 # Questão 1.14 {-}
 
-## Enunciado {-}
 
 ```{r, echo=FALSE, include=FALSE}
-source("scripts/equations.R", local = knitr::knit_global())
+source("scripts/solution114.R", local = knitr::knit_global())
 source("scripts/enunciados.R", local = knitr::knit_global())
 dados <- selecionaDados(questao113, params$modelo)
+sol <- solution(dados)
 ```
 
 
@@ -20,7 +20,7 @@ $$
 \end{cases}
 $$
 
-Três transformadores idênticos, dentro de cada da versão, são ligado formando um banco trifásico $\Delta$/Y. Usando os valores nominais do banco trifásico como valores de base (valores trifásicos!) e **usando a técnica p.u.**, pede-se:
+Três transformadores idênticos são ligado formando um banco trifásico $\Delta$/Y. Usando os valores nominais do banco trifásico como valores de base (valores trifásicos!) e **usando a técnica p.u.**, pede-se:
 
 a. A tensão na fonte e a potência aparente fornecida pela fonte se o transformador estiver alimentando carga nominal (potência aparente e tensão nominais), fator de potência 0,6 capacitivo, usando o modelo impedância série;
 b. O rendimento e a regulação do transformador;
@@ -28,4 +28,50 @@ c. Retornar aos valores reais e comparar as grandezas de fase obtidas com aquela
 
 ## Resolução {-}
 
-Working on it :)
+Inicialmente, determina-se que para simplificar a solução será optado por reduzir o sistema trifásico equilibrado a uma única fase de um sistema estrela equivalente. Será considerado um fator de conversão como $a = \frac{`r sol[["vfaseP"]]`}{`r sol[["vfaseS"]]`} = `r sol[["a"]]`$. Também pode-se determinar os valores nominais de tensão. Assim, tem-se `r sol[["vfaseP"]]`V de fase e `r sol[["vlinhaP"]]`V de linha para o primário e `r sol[["vfaseS"]]`V de fase e `r round(sol[["vlinhaS"]],2)`V de linha para o secundário.
+
+Assim, como as impedâncias já foram dadas sendo consideradas pelo lado de baixa tensão, tem-se a impedância equivalente de $Z = `r sol[["z"]]`\Omega$. Também pode-se determinar os valores base de acordo com o enunciado, tem-se como valores base: $S_{base} = `r sol[["sbase"]]` VA$ (triplo da potência por serem três transformadores), $V_{a_{base}} = `r sol[["vbasea"]]`V$, $V_{b_{base}} = `r round(sol[["vbaseb"]],2)`V$. Como $I_{base} = \frac{S_{base}}{V_{base}}$, então $I_{a_{base}} = `r round(sol[["ibasea"]],2)`A$ e $I_{b_{base}} = `r round(sol[["ibaseb"]],2)`A$
+
+Considerando o modelo de impedância em série também é possível determinar a corrente de entrada fazendo-se 
+
+$$
+I_e = \frac{S}{(a)(V_2)} \angle(-\arccos{fp}) = `r round(Mod(sol[["ie"]]),2)` \angle (`r round(rad2degree(Arg(sol[["ie"]])),2)`)^\circ A.
+$$
+
+Assim, a corrente de saída é tida por $I_c = `r round(Mod(sol[["ic"]]),2)` \angle (`r round(rad2degree(Arg(sol[["ic"]])),2)`)^\circ A$ . Com os valores de $I_e$, $Z$ e $V_c$, é possível calcular a tensão na fonte fazendo-se $V_e = (Z)(I_e) + V_c$. Assim, 
+
+$$
+V_e = `r round(Mod(sol[["ve"]]),2)`\angle(`r round(rad2degree(Arg(sol[["ve"]])),2)`)^\circ V.
+$$
+
+Dessa forma, tem-se que a potência aparente fornecida pela fonte como 
+
+$$
+S_e = `r round(sol[["se"]],2)`.
+$$
+
+Tendo os valores calculados, é possível encontrar os valores de tensão por unidade, fazendo-se 
+
+$$
+V_{e_{p.u.}} = \frac{V_e}{V_{a_{base}}} = \frac{`r sol[["ve"]]`}{`r sol[["vbasea"]]`} \implies \boxed{V_{e_{p.u.}} = `r round(Mod(sol[["vepu"]]),2)` \angle(`r round(rad2degree(Arg(sol[["vepu"]])),2)`)^\circ pu}
+$$
+
+e o valor da potência por unidade fazendo-se
+
+$$
+S_{e_{p.u.}} = \frac{S_e}{S_{base}} = \frac{`r sol[["se"]]`}{`r sol[["sbase"]]`} \implies \boxed{S_{e_{p.u.}} = `r round(sol[["sepu"]],2)`pu}
+$$
+
+A regulação é dada por
+
+$$
+\Re = \frac{V_{e_{p.u.}}-V_{c_{p.u.}}}{V_{c_{p.u.}}} \implies \boxed{\Re = `r round(100*sol[["re"]],2)`\%}
+$$
+
+O rendimento é dado por
+
+$$
+\eta = \frac{P_{c_{p.u.}}}{P_{e_{p.u.}}} \implies \boxed{\eta = `r round(100*sol[["n"]],2)`\%}
+$$
+
+Percebe-se que, como esperado, o rendimento e a regulação são precisamente os mesmos que os encontrados no exemplo 1.13.
